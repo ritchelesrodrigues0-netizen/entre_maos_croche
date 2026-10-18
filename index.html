@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6efe4" />
+    <title>Entre Mãos Crochê | Feito à mão, com carinho em cada detalhe</title>
+    <meta
+      name="description"
+      content="Peças de crochê feitas à mão com carinho. Conheça o catálogo da Entre Mãos Crochê e encomende pelo Instagram."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Entre Mãos Crochê" />
+    <meta property="og:title" content="Entre Mãos Crochê" />
+    <meta property="og:description" content="Feito à mão, com carinho em cada detalhe. Conheça nossas peças de crochê." />
+    <link rel="icon" type="image/svg+xml" href="img/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Nunito+Sans:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <header id="site-header"></header>
+
+    <main id="conteudo">
+      <section class="hero">
+        <div class="container hero__grid">
+          <div>
+            <p class="hero__eyebrow">Crochê artesanal</p>
+            <h1>Feito à mão, com carinho em cada detalhe</h1>
+            <p class="hero__lead">
+              Cada peça da Entre Mãos Crochê nasce ponto a ponto, com calma e cuidado. Conheça o que está
+              pronto ou peça o seu sob encomenda.
+            </p>
+            <div class="hero__actions">
+              <a href="catalogo.html" class="btn">Conheça nossos produtos</a>
+              <a class="btn btn--ghost" data-instagram href="#" target="_blank" rel="noopener noreferrer"
+                >Acompanhe no Instagram</a
+              >
+            </div>
+          </div>
+          <img
+            class="hero__logo"
+            src="assets/logo.png"
+            alt="Logotipo Entre Mãos Crochê: novelo rosa, flores e coração"
+            width="340"
+            height="272"
+          />
+        </div>
+      </section>
+
+      <section class="section section--paper" aria-labelledby="destaques">
+        <div class="container">
+          <div class="section__head">
+            <div class="divider"></div>
+            <h2 id="destaques">Peças em destaque</h2>
+          </div>
+          <div id="catalogo-destaques"></div>
+          <p style="margin-top: 1.5rem">
+            <a href="catalogo.html" class="btn btn--ghost">Ver catálogo completo</a>
+          </p>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="artesanal">
+        <div class="container prose">
+          <div class="divider"></div>
+          <h2 id="artesanal">Um trabalho feito com as mãos</h2>
+          <p>
+            Aqui, o tempo é parte do trabalho. Cada ponto é feito com atenção para que a peça chegue até você
+            bem acabada e com o jeito único do que é artesanal.
+          </p>
+          <a href="sobre.html">Conheça a nossa história</a>
+        </div>
+      </section>
+    </main>
+
+    <footer id="site-footer"></footer>
+
+    <script type="module" src="js/layout.js"></script>
+    <script type="module">
+      import { renderCatalog } from './js/catalog.js'
+      renderCatalog(document.getElementById('catalogo-destaques'), { featuredOnly: true, limit: 8 })
+    </script>
+  </body>
+</html>

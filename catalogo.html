@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6efe4" />
+    <title>Catálogo | Entre Mãos Crochê</title>
+    <meta
+      name="description"
+      content="Veja as peças de crochê da Entre Mãos Crochê, filtre por categoria e encomende pelo Instagram."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Entre Mãos Crochê" />
+    <meta property="og:title" content="Catálogo | Entre Mãos Crochê" />
+    <meta property="og:description" content="Peças de crochê feitas à mão. Encomende pelo Instagram." />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Nunito+Sans:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <header id="site-header"></header>
+
+    <main id="conteudo">
+      <section class="section">
+        <div class="container">
+          <div class="section__head">
+            <div class="divider"></div>
+            <h1>Catálogo</h1>
+            <p>Toque em uma peça para ver detalhes, preço e disponibilidade.</p>
+          </div>
+          <div id="catalogo"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer id="site-footer"></footer>
+
+    <script type="module" src="js/layout.js"></script>
+    <script type="module">
+      import { renderCatalog } from './js/catalog.js'
+      renderCatalog(document.getElementById('catalogo'))
+    </script>
+  </body>
+</html>
