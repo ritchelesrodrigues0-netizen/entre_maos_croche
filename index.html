@@ -14,7 +14,7 @@
     <meta property="og:site_name" content="Entre Mãos Crochê" />
     <meta property="og:title" content="Entre Mãos Crochê" />
     <meta property="og:description" content="Feito à mão, com carinho em cada detalhe. Conheça nossas peças de crochê." />
-    <link rel="icon" type="image/svg+xml" href="img/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -45,12 +45,30 @@
             </div>
           </div>
           <img
-            class="hero__logo"
-            src="assets/logo.png"
-            alt="Logotipo Entre Mãos Crochê: novelo rosa, flores e coração"
-            width="340"
-            height="272"
+            class="hero__photo"
+            src="assets/logo.jpeg"
+            alt="logo_entre_maos"
+            width="640"
+            height="640"
+            onerror="this.onerror=null;this.src='img/logo.png';this.classList.add('hero__photo--logo')"
           />
+        </div>
+      </section>
+
+      <section class="values" aria-label="Nossos diferenciais">
+        <div class="container values__grid">
+          <div class="value">
+            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="M24 40C10 30 6 22 6 16a9 9 0 0 1 18-2 9 9 0 0 1 18 2c0 6-4 14-18 24z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>
+            <div><strong>Feito à mão</strong><span>Ponto a ponto, uma peça de cada vez</span></div>
+          </div>
+          <div class="value">
+            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><circle cx="24" cy="24" r="16" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M10 20c9 5 19 5 28 0M9 28c10 5 20 5 30 0M16 11c6 8 6 18 0 26M32 11c-6 8-6 18 0 26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <div><strong>Sob encomenda</strong><span>Escolha as cores e os detalhes</span></div>
+          </div>
+          <div class="value">
+            <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="M8 10h32a2 2 0 0 1 2 2v20a2 2 0 0 1-2 2H22l-9 7v-7H8a2 2 0 0 1-2-2V12a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg>
+            <div><strong>Atendimento no Instagram</strong><span>Tire dúvidas e faça seu pedido</span></div>
+          </div>
         </div>
       </section>
 
@@ -67,6 +85,24 @@
         </div>
       </section>
 
+      <section class="section" aria-labelledby="como-encomendar">
+        <div class="container">
+          <div class="section__head">
+            <div class="divider"></div>
+            <h2 id="como-encomendar">Como encomendar</h2>
+            <p>Três passos simples, tudo combinado pelo Instagram.</p>
+          </div>
+          <ol class="steps">
+            <li><span class="steps__num" aria-hidden="true">1</span><h3>Escolha a peça</h3><p>Veja o catálogo e separe a que mais combina com você.</p></li>
+            <li><span class="steps__num" aria-hidden="true">2</span><h3>Chame no Instagram</h3><p>Envie uma mensagem direta com a peça que você quer.</p></li>
+            <li><span class="steps__num" aria-hidden="true">3</span><h3>Combine prazo e cores</h3><p>Definimos juntas os detalhes, o prazo e a forma de entrega.</p></li>
+          </ol>
+          <p style="margin-top: 1.5rem">
+            <a class="btn" data-instagram href="#" target="_blank" rel="noopener noreferrer">Falar no Instagram</a>
+          </p>
+        </div>
+      </section>
+
       <section class="section" aria-labelledby="artesanal">
         <div class="container prose">
           <div class="divider"></div>
@@ -75,7 +111,6 @@
             Aqui, o tempo é parte do trabalho. Cada ponto é feito com atenção para que a peça chegue até você
             bem acabada e com o jeito único do que é artesanal.
           </p>
-          <a href="sobre.html">Conheça a nossa história</a>
         </div>
       </section>
     </main>

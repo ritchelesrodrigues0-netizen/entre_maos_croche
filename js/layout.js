@@ -3,7 +3,6 @@ import { config } from './config.js'
 const LINKS = [
   ['index.html', 'Início'],
   ['catalogo.html', 'Catálogo'],
-  ['sobre.html', 'Sobre'],
   ['contato.html', 'Contato'],
 ]
 
@@ -22,8 +21,11 @@ function headerHtml() {
     <div class="container">
       <div class="site-header__bar">
         <a href="index.html" class="brand" aria-label="Entre Mãos Crochê, página inicial">
-          <span class="brand__name">Entre Mãos</span>
-          <span class="brand__sub">CROCHÊ</span>
+          <img class="brand__yarn" src="assets/novelo.png" alt="" width="42" height="42" />
+          <span class="brand__text">
+            <span class="brand__name">Entre Mãos</span>
+            <span class="brand__sub">CROCHÊ</span>
+          </span>
         </a>
         <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="menu-principal">Menu</button>
       </div>
@@ -51,7 +53,7 @@ function footerHtml() {
           </ul>
         </div>
       </div>
-          <p class="site-footer__legal">© ${new Date().getFullYear()} Entre Mãos Crochê. Todas as peças são feitas à mão. · <a href="${config.adminPath}" rel="nofollow">Área restrita</a></p>
+      <p class="site-footer__legal">© ${new Date().getFullYear()} Entre Mãos Crochê. Todas as peças são feitas à mão. · <a href="${config.adminPath}" rel="nofollow">Área restrita</a></p>
     </div>`
 }
 

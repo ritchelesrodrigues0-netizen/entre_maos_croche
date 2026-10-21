@@ -322,7 +322,8 @@ textarea:focus {
 }
 .brand {
   display: inline-flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
   line-height: 1;
   text-decoration: none;
   color: var(--coffee);
@@ -1123,4 +1124,117 @@ dialog.confirm h2 {
 }
 .toast--ok {
   background: var(--ok);
+}
+/* ---------- Página inicial: foto, diferenciais e passos ---------- */
+.hero__photo {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  aspect-ratio: 1 /1;
+  object-fit: cover;
+  margin-inline: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--cream-deep);
+}
+.hero__photo--logo {
+  aspect-ratio: auto;
+  object-fit: contain;
+  max-width: 340px;
+}
+
+.values {
+  border-block: 1px solid var(--line);
+  background: var(--paper);
+}
+.values__grid {
+  display: grid;
+  gap: 0;
+}
+.value {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.value:last-child {
+  border-bottom: 0;
+}
+.value svg {
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  color: var(--rose);
+}
+.value strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+.value span {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--coffee-soft);
+}
+@media (min-width: 768px) {
+  .values__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+  .value {
+    border-bottom: 0;
+    padding: 1.4rem 0;
+  }
+}
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+.steps li {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 1.2rem;
+}
+.steps__num {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 0.6rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--rose);
+  color: var(--rose);
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.steps h3 {
+  margin-bottom: 0.3rem;
+}
+.steps p {
+  margin: 0;
+  color: var(--coffee-soft);
+}
+@media (min-width: 768px) {
+  .steps {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.3rem;
+  }
+}
+.brand__yarn {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+.brand__text {
+  display: flex;
+  flex-direction: column;
 }
