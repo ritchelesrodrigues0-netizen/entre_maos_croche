@@ -49,8 +49,14 @@ async function load() {
   const images = product.images || []
   const price = formatPrice(product.price)
   const soldOut = product.stock_status === 'esgotado'
-  const link = product.instagram_url || config.instagramUrl
+  const handle = String(config.instagramHandle || '').replace('@', '')
+  const dmLink = handle ? `https://ig.me/m/${handle}` : config.instagramUrl
   const cta = product.stock_status === 'sob_encomenda' ? 'Encomendar pelo Instagram' : 'Consultar pelo Instagram'
+  const message =
+    product.stock_status === 'sob_encomenda'
+      ? `Olá! Gostaria de encomendar a peça "${product.title}".`
+      : `Olá! Tenho interesse na peça "${product.title}". Ainda está disponível?`
+      'Consultar pelo Instagram'
   const description = product.description || `${product.title}, peça de crochê feita à mão.`
 
   document.title = `${product.title} | ${config.brandName}`
@@ -78,7 +84,9 @@ async function load() {
     ? `<button type="button" class="btn" disabled>Esgotado no momento</button>
        <p style="margin-top:1rem">Esta peça já encontrou um lar. <a href="catalogo.html">Veja outras peças</a> ou fale conosco no
        <a href="${esc(config.instagramUrl)}" target="_blank" rel="noopener noreferrer">Instagram</a> para saber de novas versões.</p>`
-    : `<a class="btn" href="${esc(link)}" target="_blank" rel="noopener noreferrer">${cta}</a>`
+        : `<a class="btn" id="order-btn" href="${esc(dmLink)}" target="_blank" rel="noopener noreferrer">${cta}</a>
+       <p class="order__hint" id="order-hint" role="status">Ao tocar, abrimos a conversa no Instagram e copiamos uma mensagem pronta: é só colar e enviar.</p>
+       ${product.instagram_url ? `<p class="order__hint"><a href="${esc(product.instagram_url)}" target="_blank" rel="noopener noreferrer">Ver esta peça no Instagram</a></p>` : ''}`
 
   root.innerHTML = `
     <div class="container">
@@ -113,6 +121,18 @@ async function load() {
       root.querySelectorAll('.gallery__thumb').forEach((b) => b.setAttribute('aria-current', String(b === btn)))
     }),
   )
+  
+  const orderBtn = document.getElementById('order-btn')
+  if (orderBtn) {
+    orderBtn.addEventListener('click', async () => {
+      const hint = document.getElementById('order-hint')
+      try {
+        await navigator.clipboard.writeText(message)
+        if (hint) hint.textContent = 'Mensagem copiada! Cole na conversa do Instagram e envie.'
+      } catch {
+        if (hint) hint.textContent = `Se quiser, escreva: ${message}`
+      }
+    })
+  }
 }
-
 load()

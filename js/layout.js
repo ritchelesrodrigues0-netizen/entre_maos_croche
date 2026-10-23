@@ -75,8 +75,23 @@ function init() {
     footer.className = 'site-footer'
     footer.innerHTML = footerHtml()
   }
-  document.querySelectorAll('[data-instagram]').forEach((a) => {
+    document.querySelectorAll('[data-instagram]').forEach((a) => {
     a.href = config.instagramUrl
+  })
+
+  const topBtn = document.createElement('button')
+  topBtn.type = 'button'
+  topBtn.className = 'to-top'
+  topBtn.setAttribute('aria-label', 'Voltar ao topo')
+  topBtn.innerHTML =
+    '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 19V6M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+  document.body.appendChild(topBtn)
+  const toggleTop = () => topBtn.classList.toggle('is-visible', window.scrollY > 600)
+  window.addEventListener('scroll', toggleTop, { passive: true })
+  toggleTop()
+  topBtn.addEventListener('click', () => {
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    window.scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' })
   })
 }
 
