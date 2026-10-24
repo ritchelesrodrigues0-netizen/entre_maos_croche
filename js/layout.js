@@ -21,7 +21,7 @@ function headerHtml() {
     <div class="container">
       <div class="site-header__bar">
         <a href="index.html" class="brand" aria-label="Entre Mãos Crochê, página inicial">
-          <img class="brand__yarn" src="assets/novelo.png" alt="" width="42" height="42" />
+        <span class="brand__yarn" aria-hidden="true"><img src="assets/novelo-fio.png" alt="" width="127" height="47" /></span>
           <span class="brand__text">
             <span class="brand__name">Entre Mãos</span>
             <span class="brand__sub">CROCHÊ</span>
