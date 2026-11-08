@@ -22,13 +22,13 @@ import {
   priceToInput,
   statusBadge,
 } from './util.js'
-
+ 
 const app = document.getElementById('app')
 const state = { client: null, session: null, isAdmin: false, recovery: false }
 let cleanup = null // libera pré-visualizações ao sair da tela de formulário
 let loginMode = 'entrar' // 'entrar' | 'recuperar'
 let loginNotice = null
-
+ 
 /* ---------------------------------------------------------------------
    Avisos e confirmação
 --------------------------------------------------------------------- */
@@ -40,7 +40,7 @@ function toast(message, kind = 'info') {
   box.appendChild(item)
   setTimeout(() => item.remove(), 5000)
 }
-
+ 
 function confirmDialog({ title, message, confirmLabel }) {
   return new Promise((resolve) => {
     const dialog = document.getElementById('confirm')
@@ -68,13 +68,13 @@ function confirmDialog({ title, message, confirmLabel }) {
     cancel.focus()
   })
 }
-
+ 
 /** Vai para outra tela: troca o # e, se já estava nele, só redesenha. */
 function go(hash) {
   if (location.hash === hash) route()
   else location.hash = hash
 }
-
+ 
 function authError(message) {
   const m = String(message || '').toLowerCase()
   if (m.includes('invalid login credentials')) return 'E-mail ou senha incorretos.'
@@ -88,7 +88,7 @@ function authError(message) {
   if (m.includes('password') && m.includes('characters')) return 'A senha precisa ter pelo menos 8 caracteres.'
   return 'Não foi possível concluir. Tente novamente.'
 }
-
+ 
 /* ---------------------------------------------------------------------
    Estrutura comum do painel
 --------------------------------------------------------------------- */
@@ -112,16 +112,16 @@ function shell(active, inner) {
     </div>`
   $('#btn-sair').addEventListener('click', signOut)
 }
-
+ 
 function loading(text) {
   return `<div class="loading-block" role="status"><span class="spinner" aria-hidden="true"></span> ${esc(text)}</div>`
 }
-
+ 
 function errorBlock(message) {
   return `<div class="notice notice--error" role="alert"><p>${esc(message)}</p>
     <button type="button" class="btn btn--small" data-retry>Tentar novamente</button></div>`
 }
-
+ 
 /* ---------------------------------------------------------------------
    Autenticação (Supabase Auth). A autorização vem do banco: is_admin().
 --------------------------------------------------------------------- */
@@ -131,7 +131,7 @@ async function refreshAdmin() {
   const { data, error } = await state.client.rpc('is_admin')
   state.isAdmin = !error && data === true
 }
-
+ 
 async function signOut() {
   if (state.client) await state.client.auth.signOut()
   state.session = null
@@ -140,7 +140,7 @@ async function signOut() {
   loginMode = 'entrar'
   go('#/entrar')
 }
-
+ 
 function renderLogin() {
   const recover = loginMode === 'recuperar'
   app.innerHTML = `
@@ -177,24 +177,24 @@ function renderLogin() {
       </div>
     </div>`
   loginNotice = null
-
+ 
   const msg = $('#login-msg')
   const showMsg = (text, kind) => {
     msg.innerHTML = `<div class="notice ${kind === 'ok' ? 'notice--ok' : 'notice--error'}" role="alert">${esc(text)}</div>`
   }
-
+ 
   $('#toggle-mode').addEventListener('click', () => {
     loginMode = recover ? 'entrar' : 'recuperar'
     renderLogin()
   })
-
+ 
   $('#login-form').addEventListener('submit', async (e) => {
     e.preventDefault()
     msg.innerHTML = ''
     const email = $('#email').value.trim()
     if (!email) return showMsg('Informe o seu e-mail.', 'error')
     const button = $('#login-form button[type="submit"]')
-
+ 
     if (recover) {
       button.disabled = true
       button.textContent = 'Aguarde…'
@@ -207,7 +207,7 @@ function renderLogin() {
       else showMsg('Se este e-mail estiver cadastrado, você receberá um link para criar uma nova senha.', 'ok')
       return
     }
-
+ 
     const password = $('#senha').value
     if (!password) return showMsg('Informe a sua senha.', 'error')
     button.disabled = true
@@ -223,7 +223,7 @@ function renderLogin() {
     go('#/painel')
   })
 }
-
+ 
 function renderNotAdmin() {
   app.innerHTML = `
     <div class="auth-wrap">
@@ -235,7 +235,7 @@ function renderNotAdmin() {
     </div>`
   $('#sair-na').addEventListener('click', signOut)
 }
-
+ 
 function renderReset() {
   app.innerHTML = `
     <div class="auth-wrap">
@@ -273,12 +273,12 @@ function renderReset() {
     setTimeout(() => go('#/painel'), 1200)
   })
 }
-
+ 
 /* ---------------------------------------------------------------------
    Painel: resumo, busca, filtros e lista
 --------------------------------------------------------------------- */
 const filters = { search: '', category: '', state: '' }
-
+ 
 async function renderDashboard() {
   shell(
     'painel',
@@ -296,14 +296,14 @@ async function renderDashboard() {
   }
   drawDashboard(dash, products)
 }
-
+ 
 function drawDashboard(dash, products) {
   const published = products.filter((p) => p.is_published).length
   const categories = [...new Set(products.map((p) => p.category))].sort((a, b) =>
     a.localeCompare(b, 'pt-BR'),
   )
   let busyId = null
-
+ 
   dash.innerHTML = `
     <div class="stats" aria-label="Resumo dos produtos">
       <div class="stat"><strong>${products.length}</strong><span>Cadastrados</span></div>
@@ -332,9 +332,9 @@ function drawDashboard(dash, products) {
       </div>
     </div>
     <div id="lista"></div>`
-
+ 
   const list = $('#lista', dash)
-
+ 
   function drawList() {
     if (products.length === 0) {
       list.innerHTML = `<div class="empty"><h3>Nenhuma peça cadastrada ainda</h3>
@@ -385,7 +385,7 @@ function drawDashboard(dash, products) {
       .join('')}</ul>`
   }
   drawList()
-
+ 
   $('#busca', dash).addEventListener('input', (e) => {
     filters.search = e.target.value
     drawList()
@@ -398,14 +398,14 @@ function drawDashboard(dash, products) {
     filters.state = e.target.value
     drawList()
   })
-
+ 
   list.addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-act]')
     if (!btn) return
     const product = products.find((p) => p.id === btn.dataset.id)
     if (!product) return
     const act = btn.dataset.act
-
+ 
     if (act === 'toggle') {
       busyId = product.id
       drawList()
@@ -419,7 +419,7 @@ function drawDashboard(dash, products) {
       busyId = null
       drawDashboard(dash, products)
     }
-
+ 
     if (act === 'dup') {
       busyId = product.id
       drawList()
@@ -433,7 +433,7 @@ function drawDashboard(dash, products) {
         drawList()
       }
     }
-
+ 
     if (act === 'del') {
       const yes = await confirmDialog({
         title: 'Excluir esta peça?',
@@ -455,7 +455,7 @@ function drawDashboard(dash, products) {
     }
   })
 }
-
+ 
 /* ---------------------------------------------------------------------
    Formulário de produto (criar e editar) com upload de fotos
 --------------------------------------------------------------------- */
@@ -463,7 +463,7 @@ async function renderForm(id) {
   const isEdit = Boolean(id)
   shell(isEdit ? 'editar' : 'novo', loading(isEdit ? 'Carregando a peça…' : 'Abrindo…'))
   const content = $('.admin-main .container')
-
+ 
   let existing = null
   if (isEdit) {
     try {
@@ -478,7 +478,7 @@ async function renderForm(id) {
       return
     }
   }
-
+ 
   const form = {
     title: existing?.title ?? '',
     description: existing?.description ?? '',
@@ -495,11 +495,12 @@ async function renderForm(id) {
     kind: 'existing',
     path,
     url: publicImageUrl(path),
+    color: existing?.image_colors?.[i] ?? '',
   }))
   let photoCounter = 0
   let replaceId = null
   let saving = false
-
+ 
   content.innerHTML = `
     <form id="product-form" novalidate>
       <div class="admin-title">
@@ -507,7 +508,7 @@ async function renderForm(id) {
         <a href="#/painel" class="btn btn--ghost btn--small">Voltar</a>
       </div>
       <div id="submit-error"></div>
-
+ 
       <section class="form-card" aria-labelledby="sec-fotos">
         <h2 id="sec-fotos">Fotos</h2>
         <div class="uploader__buttons">
@@ -517,13 +518,13 @@ async function renderForm(id) {
         <input id="in-galeria" class="sr-only" type="file" accept="image/jpeg,image/png,image/webp" multiple tabindex="-1" aria-label="Escolher fotos da galeria">
         <input id="in-camera" class="sr-only" type="file" accept="image/*" capture="environment" tabindex="-1" aria-label="Tirar uma foto com a câmera">
         <input id="in-trocar" class="sr-only" type="file" accept="image/jpeg,image/png,image/webp" tabindex="-1" aria-label="Escolher a foto que vai substituir a atual">
-        <p style="font-size:.85rem;color:var(--coffee-soft)">Formatos JPG, PNG ou WebP. As fotos são reduzidas automaticamente (máx. 5 MB cada, até ${config.maxImages} fotos). A primeira é a foto principal.</p>
+        <p style="font-size:.85rem;color:var(--coffee-soft)">Formatos JPG, PNG ou WebP. As fotos são reduzidas automaticamente (máx. 5 MB cada, até ${config.maxImages} fotos). A primeira é a foto principal. Escreva o nome da cor embaixo de cada foto (opcional).</p>
         <div id="photo-status"></div>
         <div id="photo-errors"></div>
         <div id="photo-grid" class="uploader__grid"></div>
         <p class="error-text" data-err="photos" role="alert" hidden style="color:var(--danger);font-weight:600"></p>
       </section>
-
+ 
       <section class="form-card" aria-labelledby="sec-dados">
         <h2 id="sec-dados">Dados da peça</h2>
         <div class="field">
@@ -566,7 +567,7 @@ async function renderForm(id) {
           <span class="error-text" data-err="instagram_url" hidden></span>
         </div>
       </section>
-
+ 
       <section class="form-card" aria-labelledby="sec-pub">
         <h2 id="sec-pub">Publicação</h2>
         <div class="field">
@@ -578,20 +579,20 @@ async function renderForm(id) {
         </div>
         <label class="check"><input id="featured" type="checkbox" ${form.is_featured ? 'checked' : ''}> Destacar na página inicial</label>
       </section>
-
+ 
       <div class="savebar">
         <p id="progress" role="status" style="flex-basis:100%;margin:0" hidden></p>
         <button type="submit" class="btn" id="btn-salvar">${isEdit ? 'Salvar alterações' : 'Salvar peça'}</button>
         <a href="#/painel" class="btn btn--ghost" id="btn-cancelar">Cancelar</a>
       </div>
     </form>`
-
+ 
   const grid = $('#photo-grid')
   const photoStatus = $('#photo-status')
   const photoErrors = $('#photo-errors')
-
+ 
   cleanup = () => photos.forEach((p) => p.kind === 'new' && URL.revokeObjectURL(p.url))
-
+ 
   function setSaving(value) {
     saving = value
     $$('#product-form input, #product-form select, #product-form textarea, #product-form button').forEach((el) => {
@@ -600,7 +601,7 @@ async function renderForm(id) {
     $('#btn-salvar').textContent = value ? 'Salvando…' : isEdit ? 'Salvar alterações' : 'Salvar peça'
     $('#btn-cancelar').setAttribute('aria-disabled', String(value))
   }
-
+ 
   function drawPhotos() {
     grid.innerHTML = photos
       .map(
@@ -610,6 +611,7 @@ async function renderForm(id) {
             <img src="${esc(p.url)}" alt="Foto ${i + 1} da peça">
             ${i === 0 ? '<span class="badge badge--live photo__main">Principal</span>' : ''}
           </div>
+          <input type="text" class="photo__color" data-photo-color data-id="${esc(p.id)}" maxlength="30" placeholder="Cor (ex.: Vinho)" value="${esc(p.color || '')}" aria-label="Cor da foto ${i + 1}">
           <div class="photo__actions">
             ${i !== 0 ? `<button type="button" class="btn btn--ghost" data-photo="main" data-id="${esc(p.id)}">Tornar principal</button>` : ''}
             <button type="button" class="btn btn--ghost" data-photo="replace" data-id="${esc(p.id)}">Trocar</button>
@@ -623,7 +625,7 @@ async function renderForm(id) {
     $('#btn-camera').disabled = full
   }
   drawPhotos()
-
+ 
   async function filesToPhotos(files) {
     const added = []
     const errors = []
@@ -642,13 +644,13 @@ async function renderForm(id) {
     }
     return { added, errors }
   }
-
+ 
   function showPhotoErrors(errors) {
     photoErrors.innerHTML = errors.length
       ? `<div class="notice notice--error" role="alert">${errors.map((e) => `<div>${esc(e)}</div>`).join('')}</div>`
       : ''
   }
-
+ 
   async function withBusy(fn) {
     photoStatus.innerHTML = '<p role="status"><span class="spinner" aria-hidden="true"></span> Preparando as fotos…</p>'
     try {
@@ -657,7 +659,7 @@ async function renderForm(id) {
       photoStatus.innerHTML = ''
     }
   }
-
+ 
   async function addFiles(fileList) {
     if (!fileList || fileList.length === 0) return
     const room = config.maxImages - photos.length
@@ -672,7 +674,7 @@ async function renderForm(id) {
     showPhotoErrors(errors)
     drawPhotos()
   }
-
+ 
   async function replaceFile(fileList) {
     const target = replaceId
     replaceId = null
@@ -686,14 +688,14 @@ async function renderForm(id) {
         photos = photos.map((p) => {
           if (p.id !== target) return p
           if (p.kind === 'new') URL.revokeObjectURL(p.url)
-          return replacement
+          return { ...replacement, color: p.color }
         })
       }
     })
     showPhotoErrors(errors)
     drawPhotos()
   }
-
+ 
   $('#btn-galeria').addEventListener('click', () => $('#in-galeria').click())
   $('#btn-camera').addEventListener('click', () => $('#in-camera').click())
   for (const [selector, handler] of [
@@ -708,7 +710,14 @@ async function renderForm(id) {
       })
     })
   }
-
+ 
+  grid.addEventListener('input', (e) => {
+    const field = e.target.closest('[data-photo-color]')
+    if (!field) return
+    const photo = photos.find((p) => p.id === field.dataset.id)
+    if (photo) photo.color = field.value
+  })
+ 
   grid.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-photo]')
     if (!btn) return
@@ -726,11 +735,11 @@ async function renderForm(id) {
     }
     drawPhotos()
   })
-
+ 
   $('#btn-cancelar').addEventListener('click', (e) => {
     if (saving) e.preventDefault()
   })
-
+ 
   function readForm() {
     return {
       title: $('#title').value.trim(),
@@ -743,7 +752,7 @@ async function renderForm(id) {
       is_featured: $('#featured').checked,
     }
   }
-
+ 
   function validate(values) {
     const errors = {}
     if (values.title.length < 2) errors.title = 'Informe o nome da peça (mínimo 2 letras).'
@@ -757,7 +766,7 @@ async function renderForm(id) {
     if (values.is_published && photos.length === 0) errors.photos = 'Adicione pelo menos uma foto para publicar a peça.'
     return errors
   }
-
+ 
   function showErrors(errors) {
     $$('[data-err]').forEach((el) => {
       const message = errors[el.dataset.err]
@@ -765,7 +774,7 @@ async function renderForm(id) {
       el.hidden = !message
     })
   }
-
+ 
   $('#product-form').addEventListener('submit', async (e) => {
     e.preventDefault()
     if (saving) return
@@ -779,7 +788,7 @@ async function renderForm(id) {
       if (first) first.scrollIntoView({ block: 'center', behavior: 'smooth' })
       return
     }
-
+ 
     setSaving(true)
     const progress = $('#progress')
     const uploaded = []
@@ -787,8 +796,10 @@ async function renderForm(id) {
       const newCount = photos.filter((p) => p.kind === 'new').length
       let sent = 0
       const finalPaths = []
+      const finalColors = []
       progress.hidden = false
       for (const photo of photos) {
+        finalColors.push((photo.color || '').trim())
         if (photo.kind === 'existing') {
           finalPaths.push(photo.path)
         } else {
@@ -799,7 +810,7 @@ async function renderForm(id) {
           finalPaths.push(path)
         }
       }
-
+ 
       progress.innerHTML = '<span class="spinner" aria-hidden="true"></span> Salvando a peça…'
       const price = parsePrice(values.price)
       const payload = {
@@ -811,15 +822,16 @@ async function renderForm(id) {
         is_published: values.is_published,
         is_featured: values.is_featured,
         images: finalPaths,
+        image_colors: finalColors,
         instagram_url: values.instagram_url || null,
       }
       if (isEdit) await updateProduct(id, payload)
       else await createProduct(payload)
-
+ 
       // Só agora apaga do Storage as fotos que foram removidas.
       const removed = originalPaths.filter((p) => !finalPaths.includes(p))
       if (removed.length > 0) await removeImages(removed).catch(() => undefined)
-
+ 
       toast(values.is_published ? 'Peça salva e publicada.' : 'Peça salva como rascunho.', 'ok')
       go('#/painel')
     } catch (error) {
@@ -834,7 +846,7 @@ async function renderForm(id) {
     }
   })
 }
-
+ 
 /* ---------------------------------------------------------------------
    Rotas (usam o # da URL: #/painel, #/novo, #/editar/ID)
 --------------------------------------------------------------------- */
@@ -847,31 +859,31 @@ function route() {
   if (state.recovery && state.session) return renderReset()
   if (!state.session) return renderLogin()
   if (!state.isAdmin) return renderNotAdmin()
-
+ 
   const match = location.hash.match(/^#\/([a-z]+)(?:\/([0-9a-f-]{36}))?/i)
   const name = match ? match[1] : 'painel'
   const id = match ? match[2] : undefined
-
+ 
   if (name === 'novo') return renderForm(null)
   if (name === 'editar' && id) return renderForm(id)
   if (name !== 'painel') return go('#/painel')
   renderDashboard()
 }
-
+ 
 window.addEventListener('hashchange', () => {
   if (state.client) route()
 })
-
+ 
 async function init() {
   if (!isConfigured()) return renderLogin()
-
+ 
   // Link de recuperação de senha do Supabase chega com "type=recovery" no endereço.
   const params = new URLSearchParams(location.hash.replace(/^#\/?/, ''))
   if (params.get('type') === 'recovery') state.recovery = true
   if (params.get('error_description')) {
     loginNotice = { kind: 'error', text: 'Este link é inválido ou expirou. Peça um novo link na tela de login.' }
   }
-
+ 
   try {
     state.client = await getClient()
   } catch {
@@ -881,7 +893,7 @@ async function init() {
       <button type="button" class="btn" onclick="location.reload()">Tentar novamente</button></div></div>`
     return
   }
-
+ 
   state.client.auth.onAuthStateChange((event, session) => {
     state.session = session
     if (event === 'PASSWORD_RECOVERY') {
@@ -889,11 +901,11 @@ async function init() {
       setTimeout(route, 0)
     }
   })
-
+ 
   const { data } = await state.client.auth.getSession()
   state.session = data.session
   await refreshAdmin()
   route()
 }
-
+ 
 init()

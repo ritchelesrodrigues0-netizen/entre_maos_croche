@@ -1324,3 +1324,20 @@ dialog.confirm h2 {
     margin-left: 15px;
   }
 }
+/* Cores da peça */
+.colors { margin: 1.2rem 0; }
+.colors__label { margin: 0 0 .5rem; color: var(--coffee-soft); }
+.colors__list { display: flex; flex-wrap: wrap; gap: .5rem; }
+.swatch {
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--paper);
+  cursor: pointer;
+}
+.swatch img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.swatch[aria-pressed='true'] { border-color: var(--rose); }
+.photo__color { width: 100%; margin-top: .4rem; }

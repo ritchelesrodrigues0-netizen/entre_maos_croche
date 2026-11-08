@@ -46,7 +46,27 @@ async function load() {
   }
   if (!product) return notFound()
 
-  const images = product.images || []
+  const allImages = product.images || []
+  const allColors = product.image_colors || []
+  const colorNames = [...new Set(allColors.map((c) => (c || '').trim()).filter(Boolean))]
+  const pathsFor = (color) =>
+    allImages.filter((_, i) => {
+      const c = (allColors[i] || '').trim()
+      return !color || !c || c === color
+    })
+  let images = pathsFor(colorNames[0] || '')
+
+  const colorsHtml = colorNames.length
+    ? `<div class="colors">
+        <p class="colors__label">Cor: <strong id="color-name">${esc(colorNames[0])}</strong></p>
+        <div class="colors__list">${colorNames
+          .map((name, n) => {
+            const first = allImages[allColors.findIndex((c) => (c || '').trim() === name)]
+            return `<button type="button" class="swatch" data-color="${esc(name)}" aria-label="Cor ${esc(name)}" aria-pressed="${n === 0}"><img src="${esc(publicImageUrl(first))}" alt="" loading="lazy"></button>`
+          })
+          .join('')}</div>
+      </div>`
+    : ''
   const price = formatPrice(product.price)
   const soldOut = product.stock_status === 'esgotado'
   const handle = String(config.instagramHandle || '').replace('@', '')
@@ -56,7 +76,6 @@ async function load() {
     product.stock_status === 'sob_encomenda'
       ? `Olá! Gostaria de encomendar a peça "${product.title}".`
       : `Olá! Tenho interesse na peça "${product.title}". Ainda está disponível?`
-      'Consultar pelo Instagram'
   const description = product.description || `${product.title}, peça de crochê feita à mão.`
 
   document.title = `${product.title} | ${config.brandName}`
@@ -70,7 +89,7 @@ async function load() {
     document.head.appendChild(og)
   }
 
-  const thumbs =
+  const thumbsHtml = () =>
     images.length > 1
       ? `<div class="gallery__thumbs">${images
           .map(
@@ -100,13 +119,14 @@ async function load() {
                 : '<div class="placeholder-img">Foto em breve</div>'
             }
           </div>
-          ${thumbs}
+          <div id="gallery-thumbs">${thumbsHtml()}</div>
         </div>
         <div>
           <p class="card__category">${esc(product.category)}</p>
           <h1>${esc(product.title)}</h1>
           ${statusBadge(product.stock_status)}
           ${price ? `<p class="detail__price">${esc(price)}</p>` : ''}
+          ${colorsHtml}
           ${product.description ? `<p class="detail__desc">${esc(product.description)}</p>` : ''}
           ${action}
         </div>
@@ -114,14 +134,30 @@ async function load() {
     </div>`
 
   const main = document.querySelector('#gallery-main img')
-  root.querySelectorAll('.gallery__thumb').forEach((btn) =>
+  const thumbsBox = document.getElementById('gallery-thumbs')
+
+  function bindThumbs() {
+    root.querySelectorAll('.gallery__thumb').forEach((btn) =>
+      btn.addEventListener('click', () => {
+        const i = Number(btn.dataset.i)
+        if (main) main.src = publicImageUrl(images[i])
+        root.querySelectorAll('.gallery__thumb').forEach((b) => b.setAttribute('aria-current', String(b === btn)))
+      }),
+    )
+  }
+  bindThumbs()
+
+  root.querySelectorAll('.swatch').forEach((btn) =>
     btn.addEventListener('click', () => {
-      const i = Number(btn.dataset.i)
-      if (main) main.src = publicImageUrl(images[i])
-      root.querySelectorAll('.gallery__thumb').forEach((b) => b.setAttribute('aria-current', String(b === btn)))
+      images = pathsFor(btn.dataset.color)
+      if (main && images[0]) main.src = publicImageUrl(images[0])
+      thumbsBox.innerHTML = thumbsHtml()
+      bindThumbs()
+      root.querySelectorAll('.swatch').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)))
+      document.getElementById('color-name').textContent = btn.dataset.color
     }),
   )
-  
+
   const orderBtn = document.getElementById('order-btn')
   if (orderBtn) {
     orderBtn.addEventListener('click', async () => {
