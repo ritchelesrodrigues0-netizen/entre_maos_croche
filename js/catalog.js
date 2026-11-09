@@ -2,10 +2,21 @@ import { isConfigured } from './config.js'
 import { fetchPublishedProducts } from './products.js'
 import { publicImageUrl } from './supabase.js'
 import { esc, formatPrice, statusBadge } from './util.js'
-
+/** Com tamanhos de preços diferentes, mostra "A partir de" o menor preço. */
+function priceLabel(p) {
+  const sizes = Array.isArray(p.sizes) ? p.sizes : []
+  const prices = sizes
+    .map((s) => (s.price !== null && s.price !== undefined ? s.price : p.price))
+    .filter((v) => v !== null && v !== undefined)
+    .map(Number)
+  if (prices.length === 0) return formatPrice(p.price)
+  const min = Math.min(...prices)
+  const max = Math.max(...prices)
+  return min < max ? `A partir de ${formatPrice(min)}` : formatPrice(min)
+}
 function cardHtml(p) {
   const cover = p.images && p.images[0]
-  const price = formatPrice(p.price)
+  const price = priceLabel(p)
   const media = cover
     ? `<img src="${esc(publicImageUrl(cover))}" alt="${esc(p.title)}, peça de crochê" loading="lazy" decoding="async">`
     : '<div class="placeholder-img">Foto em breve</div>'

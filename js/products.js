@@ -2,7 +2,7 @@ import { requireClient } from './supabase.js'
 import { copyImage, removeImages } from './images.js'
 
 const COLUMNS =
-  'id,title,description,price,category,stock_status,is_published,is_featured,images,image_colors,instagram_url,created_by,created_at,updated_at'
+  'id,title,description,price,category,stock_status,is_published,is_featured,images,image_colors,sizes,instagram_url,created_by,created_at,updated_at'
 
 function friendly(error) {
   if (error.code === '42501') {
@@ -106,6 +106,7 @@ export async function duplicateProduct(product) {
       is_featured: false,
       images: copied,
       image_colors: product.image_colors || [],
+      sizes: product.sizes || [],
       instagram_url: product.instagram_url,
     })
   } catch (error) {

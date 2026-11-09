@@ -500,6 +500,18 @@ async function renderForm(id) {
   let photoCounter = 0
   let replaceId = null
   let saving = false
+  let sizes = (existing?.sizes ?? []).map((s, i) => ({
+    id: `size-${i}`,
+    label: s.label ?? '',
+    price: priceToInput(s.price ?? null),
+  }))
+  let sizeCounter = sizes.length
+  let hasSizes = sizes.length > 0
+  const SIZE_ORDER = ['PP', 'P', 'M', 'G', 'GG', 'XG']
+  const sizeRank = (label) => {
+    const i = SIZE_ORDER.indexOf(String(label).trim().toUpperCase())
+    return i === -1 ? 99 : i
+  }
  
   content.innerHTML = `
     <form id="product-form" novalidate>
@@ -542,6 +554,7 @@ async function renderForm(id) {
           <div class="field">
             <label for="price">Preço em reais (opcional)</label>
             <input id="price" type="text" inputmode="decimal" placeholder="Ex.: 45,90" value="${esc(form.price)}">
+            <span class="hint">Com tamanhos, este é o preço dos tamanhos que ficarem sem preço próprio.</span>
             <span class="error-text" data-err="price" hidden></span>
           </div>
           <div class="field">
@@ -568,6 +581,20 @@ async function renderForm(id) {
         </div>
       </section>
  
+      <section class="form-card" aria-labelledby="sec-tamanhos">
+        <h2 id="sec-tamanhos">Tamanhos e preços</h2>
+        <label class="check"><input id="has-sizes" type="checkbox" ${hasSizes ? 'checked' : ''}> Esta peça tem tamanhos (roupas)</label>
+        <div id="sizes-box" ${hasSizes ? '' : 'hidden'}>
+          <p class="hint">Toque para adicionar os tamanhos. Em cada um você pode colocar um preço próprio. Sem preço, vale o preço padrão da peça.</p>
+          <div class="size-quick" id="size-quick">
+            ${['PP', 'P', 'M', 'G', 'GG', 'XG'].map((l) => `<button type="button" class="btn btn--ghost btn--small" data-size-add="${l}">+ ${l}</button>`).join('')}
+            <button type="button" class="btn btn--ghost btn--small" data-size-add="">+ Outro</button>
+          </div>
+          <div id="size-list"></div>
+          <span class="error-text" data-err="sizes" hidden></span>
+        </div>
+      </section>
+
       <section class="form-card" aria-labelledby="sec-pub">
         <h2 id="sec-pub">Publicação</h2>
         <div class="field">
@@ -740,6 +767,57 @@ async function renderForm(id) {
     if (saving) e.preventDefault()
   })
  
+  const sizeList = $('#size-list')
+
+  function drawSizes() {
+    sizeList.innerHTML = sizes
+      .map(
+        (s) => `
+      <div class="size-row">
+        <input type="text" data-size-label data-id="${esc(s.id)}" maxlength="10" placeholder="Tamanho" value="${esc(s.label)}" aria-label="Nome do tamanho">
+        <input type="text" data-size-price data-id="${esc(s.id)}" inputmode="decimal" placeholder="Preço (R$)" value="${esc(s.price)}" aria-label="Preço do tamanho ${esc(s.label)}">
+        <button type="button" class="btn btn--ghost btn--small" data-size-remove data-id="${esc(s.id)}">Remover</button>
+      </div>`,
+      )
+      .join('')
+  }
+  drawSizes()
+
+  $('#has-sizes').addEventListener('change', (e) => {
+    hasSizes = e.target.checked
+    $('#sizes-box').hidden = !hasSizes
+  })
+
+  $('#size-quick').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-size-add]')
+    if (!btn) return
+    const label = btn.dataset.sizeAdd
+    if (label && sizes.some((s) => s.label.trim().toLowerCase() === label.toLowerCase())) return
+    sizes.push({ id: `size-${sizeCounter++}`, label, price: '' })
+    sizes.sort((x, y) => sizeRank(x.label) - sizeRank(y.label))
+    drawSizes()
+    if (!label) {
+      const fields = sizeList.querySelectorAll('[data-size-label]')
+      if (fields.length) fields[fields.length - 1].focus()
+    }
+  })
+
+  sizeList.addEventListener('input', (e) => {
+    const field = e.target.closest('[data-size-label], [data-size-price]')
+    if (!field) return
+    const size = sizes.find((s) => s.id === field.dataset.id)
+    if (!size) return
+    if (field.matches('[data-size-label]')) size.label = field.value
+    else size.price = field.value
+  })
+
+  sizeList.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-size-remove]')
+    if (!btn) return
+    sizes = sizes.filter((s) => s.id !== btn.dataset.id)
+    drawSizes()
+  })
+
   function readForm() {
     return {
       title: $('#title').value.trim(),
@@ -762,6 +840,13 @@ async function renderForm(id) {
     if (Number.isNaN(parsePrice(values.price))) errors.price = 'Preço inválido. Exemplo: 45,90'
     if (values.instagram_url && !isValidInstagramUrl(values.instagram_url)) {
       errors.instagram_url = 'Use um link do Instagram começando com https://www.instagram.com/'
+    }
+    if (hasSizes) {
+      const labels = sizes.map((s) => s.label.trim().toLowerCase())
+      if (sizes.length === 0) errors.sizes = 'Adicione pelo menos um tamanho ou desmarque "Esta peça tem tamanhos".'
+      else if (labels.some((l) => !l)) errors.sizes = 'Todo tamanho precisa de um nome.'
+      else if (new Set(labels).size !== labels.length) errors.sizes = 'Há tamanhos repetidos.'
+      else if (sizes.some((s) => Number.isNaN(parsePrice(s.price)))) errors.sizes = 'Há um preço de tamanho inválido. Exemplo: 98,99'
     }
     if (values.is_published && photos.length === 0) errors.photos = 'Adicione pelo menos uma foto para publicar a peça.'
     return errors
@@ -823,6 +908,11 @@ async function renderForm(id) {
         is_featured: values.is_featured,
         images: finalPaths,
         image_colors: finalColors,
+        sizes: hasSizes
+          ? [...sizes]
+              .sort((x, y) => sizeRank(x.label) - sizeRank(y.label))
+              .map((s) => ({ label: s.label.trim(), price: parsePrice(s.price) }))
+          : [],
         instagram_url: values.instagram_url || null,
       }
       if (isEdit) await updateProduct(id, payload)

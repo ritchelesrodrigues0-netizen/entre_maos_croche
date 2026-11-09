@@ -67,15 +67,35 @@ async function load() {
           .join('')}</div>
       </div>`
     : ''
+
+  const sizes = Array.isArray(product.sizes) ? product.sizes : []
+  let selectedSize = sizes[0] || null
+  const priceFor = (size) => (size && size.price !== null && size.price !== undefined ? size.price : product.price)
+  const sizesHtml = sizes.length
+    ? `<div class="sizes">
+        <p class="colors__label">Tamanho: <strong id="size-name">${esc(selectedSize.label)}</strong></p>
+        <div class="sizes__list">${sizes
+          .map((s, n) => `<button type="button" class="size-btn" data-size="${n}" aria-pressed="${n === 0}">${esc(s.label)}</button>`)
+          .join('')}</div>
+      </div>`
+    : ''
+  const firstPrice = formatPrice(priceFor(selectedSize))
+
   const price = formatPrice(product.price)
   const soldOut = product.stock_status === 'esgotado'
   const handle = String(config.instagramHandle || '').replace('@', '')
   const dmLink = handle ? `https://ig.me/m/${handle}` : config.instagramUrl
   const cta = product.stock_status === 'sob_encomenda' ? 'Encomendar pelo Instagram' : 'Consultar pelo Instagram'
-  const message =
-    product.stock_status === 'sob_encomenda'
-      ? `Olá! Gostaria de encomendar a peça "${product.title}".`
-      : `Olá! Tenho interesse na peça "${product.title}". Ainda está disponível?`
+  const buildMessage = () => {
+    const details = []
+    const colorEl = document.getElementById('color-name')
+    if (colorEl) details.push(`cor ${colorEl.textContent}`)
+    if (selectedSize) details.push(`tamanho ${selectedSize.label}`)
+    const extra = details.length ? ` (${details.join(', ')})` : ''
+    return product.stock_status === 'sob_encomenda'
+      ? `Olá! Gostaria de encomendar a peça "${product.title}"${extra}.`
+      : `Olá! Tenho interesse na peça "${product.title}"${extra}. Ainda está disponível?`
+  }
   const description = product.description || `${product.title}, peça de crochê feita à mão.`
 
   document.title = `${product.title} | ${config.brandName}`
@@ -125,8 +145,9 @@ async function load() {
           <p class="card__category">${esc(product.category)}</p>
           <h1>${esc(product.title)}</h1>
           ${statusBadge(product.stock_status)}
-          ${price ? `<p class="detail__price">${esc(price)}</p>` : ''}
+          <p class="detail__price" id="detail-price"${firstPrice ? '' : ' hidden'}>${esc(firstPrice || '')}</p>
           ${colorsHtml}
+          ${sizesHtml}
           ${product.description ? `<p class="detail__desc">${esc(product.description)}</p>` : ''}
           ${action}
         </div>
@@ -158,10 +179,23 @@ async function load() {
     }),
   )
 
+  root.querySelectorAll('.size-btn').forEach((btn) =>
+    btn.addEventListener('click', () => {
+      selectedSize = sizes[Number(btn.dataset.size)]
+      root.querySelectorAll('.size-btn').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)))
+      document.getElementById('size-name').textContent = selectedSize.label
+      const priceEl = document.getElementById('detail-price')
+      const text = formatPrice(priceFor(selectedSize))
+      priceEl.textContent = text || ''
+      priceEl.hidden = !text
+    }),
+  )
+
   const orderBtn = document.getElementById('order-btn')
   if (orderBtn) {
     orderBtn.addEventListener('click', async () => {
       const hint = document.getElementById('order-hint')
+      const message = buildMessage()
       try {
         await navigator.clipboard.writeText(message)
         if (hint) hint.textContent = 'Mensagem copiada! Cole na conversa do Instagram e envie.'

@@ -1342,3 +1342,20 @@ dialog.confirm h2 {
 .swatch[aria-pressed='true'] { border-color: var(--rose); }
 .photo__color { width: 100%; margin-top: .4rem; }
 .values { display: none; }
+/* Tamanhos */
+.sizes { margin: 1.2rem 0; }
+.sizes__list { display: flex; flex-wrap: wrap; gap: .5rem; }
+.size-btn {
+  min-width: 3rem;
+  padding: .55rem .95rem;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--coffee);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.size-btn[aria-pressed='true'] { border-color: var(--rose); color: var(--rose); }
+.size-quick { display: flex; flex-wrap: wrap; gap: .5rem; margin: .75rem 0; }
+.size-row { display: grid; grid-template-columns: 5.5rem 1fr auto; gap: .5rem; align-items: center; margin-bottom: .5rem; }
